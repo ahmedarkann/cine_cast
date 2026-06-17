@@ -64,7 +64,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:5173'];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use('/uploads', express.static(uploadsDir));
