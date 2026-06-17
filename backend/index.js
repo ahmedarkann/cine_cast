@@ -630,6 +630,23 @@ app.put('/api/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+app.delete('/api/admin/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (req.user.id === id) return res.status(403).json({ message: 'Cannot delete your own account.' });
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ message: 'User not found' });
+    if (existing.role === 'admin') return res.status(403).json({ message: 'Cannot delete another admin.' });
+    await prisma.application.deleteMany({ where: { user_id: id } });
+    await prisma.user.delete({ where: { id } });
+    audit('delete', 'user', id, { email: existing.email });
+    res.json({ message: 'User deleted' });
+  } catch (error) {
+    console.error("Delete User Error:", error);
+    res.status(500).json({ message: "Internal server error deleting user" });
+  }
+});
+
 app.get('/api/projects', async (req, res) => {
   const { id, status, project_id, limit } = req.query;
   const where = {};

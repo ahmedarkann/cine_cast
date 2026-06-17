@@ -4,7 +4,7 @@ import { post, setToken } from '@/api/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, Loader2, ChevronLeft } from "lucide-react"; // Removed UserPlus as it's not used
+import { Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff } from "lucide-react"; // Removed UserPlus as it's not used
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { WebGLShader } from "@/components/ui/web-gl-shader"; // Changed import to WebGLShader
 import { toast } from "@/components/ui/use-toast";
@@ -26,6 +26,8 @@ export default function Register() {
   const [otpCode, setOtpCode] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const cooldownRef = useRef(null);
 
@@ -227,27 +229,37 @@ export default function Register() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password" title="password" className="text-white/70">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-zinc-900 border-white/10 text-white h-11"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-zinc-900 border-white/10 text-white h-11 pr-10"
+                      required
+                    />
+                    <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors">
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="confirm" className="text-white/70">Confirm Password</Label>
-                  <Input
-                    id="confirm"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-zinc-900 border-white/10 text-white h-11"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirm"
+                      type={showConfirm ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="bg-zinc-900 border-white/10 text-white h-11 pr-10"
+                      required
+                    />
+                    <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors">
+                      {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button disabled={loading} className="w-full h-11 font-bold uppercase tracking-wider mt-2 text-white shadow-lg shadow-red-600/20 hover:opacity-90" style={{ background: gradient }}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

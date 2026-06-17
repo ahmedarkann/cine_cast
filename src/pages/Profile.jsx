@@ -15,7 +15,7 @@ const TABS = [
   { key: "tab_security", icon: ShieldCheck },
 ];
 const gradient = "linear-gradient(135deg, #ef4136, #fbb040)";
-const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
 function PasswordStrengthBar({ password }) {
   const checks = [password.length >= 8, /[A-Z]/.test(password), /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password)];

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { get, post } from "@/api/api";
+import { get, post, del, resolveImageUrl } from "@/api/api";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/hooks/useLang";
 import Lightbox from "yet-another-react-lightbox";
@@ -129,6 +129,8 @@ export default function AdminUserDetail() {
   const [activeTab, setActiveTab] = useState("profile");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { user: currentUser, isLoadingAuth, authChecked } = useAuth();
 
   const GENDER_LABELS = {
@@ -184,6 +186,18 @@ export default function AdminUserDetail() {
     return matchSearch && matchStatus;
   }) || [];
 
+  const handleDeleteUser = async () => {
+    if (!deleteConfirm) { setDeleteConfirm(true); return; }
+    setDeleting(true);
+    try {
+      await del(`/api/admin/users/${userId}`);
+      navigate("/admin/users");
+    } catch {
+      setDeleting(false);
+      setDeleteConfirm(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
@@ -206,9 +220,21 @@ export default function AdminUserDetail() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-white py-12 px-4">
       <div className="max-w-5xl mx-auto">
-        <Link to="/admin/users" className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-white/50 hover:text-zinc-900 dark:hover:text-white mb-6 transition-colors">
-          <ChevronLeft className="w-3 h-3" /> {t("admin", "back_to_users")}
-        </Link>
+        <div className="flex items-center justify-between mb-6">
+          <Link to="/admin/users" className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-white/50 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <ChevronLeft className="w-3 h-3" /> {t("admin", "back_to_users")}
+          </Link>
+          {userDetail && userDetail.role !== "admin" && (
+            <button
+              onClick={handleDeleteUser}
+              disabled={deleting}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${deleteConfirm ? "bg-red-600 text-white shadow-lg shadow-red-600/30 animate-pulse" : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 hover:bg-red-500/20"}`}
+            >
+              {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <XCircle className="w-3 h-3" />}
+              {deleteConfirm ? "Confirm Delete" : "Delete User"}
+            </button>
+          )}
+        </div>
 
         {/* Profile summary header */}
         <div className="relative overflow-hidden rounded-2xl mb-8 border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 shadow-sm dark:shadow-none">
@@ -216,7 +242,7 @@ export default function AdminUserDetail() {
           <div className="px-6 sm:px-8 pb-6 -mt-10 sm:-mt-12 flex flex-col sm:flex-row sm:items-end gap-5">
             {userDetail.profile_image_url ? (
               <img
-                src={userDetail.profile_image_url}
+                src={resolveImageUrl(userDetail.profile_image_url)}
                 alt="Profile"
                 className="w-24 h-24 rounded-2xl object-cover cursor-pointer border-4 border-white dark:border-zinc-900 shadow-md shrink-0"
                 onClick={() => setLightboxIndex(0)}
@@ -345,7 +371,7 @@ export default function AdminUserDetail() {
                         className="aspect-square rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 cursor-pointer hover:opacity-80 transition-opacity"
                         onClick={() => setLightboxIndex(userDetail.profile_image_url ? i + 1 : i)}
                       >
-                        <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={resolveImageUrl(url)} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
@@ -378,7 +404,7 @@ export default function AdminUserDetail() {
                   return (
                     <div key={app.id} className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-white/5 rounded-xl p-4 flex items-center gap-4">
                       {project?.image_url ? (
-                        <img src={project.image_url} alt={project.name} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                        <img src={resolveImageUrl(project.image_url)} alt={project.name} className="w-14 h-14 rounded-lg object-cover shrink-0" />
                       ) : (
                         <div className="w-14 h-14 rounded-lg bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center shrink-0 text-zinc-400 dark:text-white/20"><Film className="w-6 h-6" /></div>
                       )}
@@ -403,8 +429,8 @@ export default function AdminUserDetail() {
           open={lightboxIndex >= 0}
           close={() => setLightboxIndex(-1)}
           slides={[
-            ...(userDetail.profile_image_url ? [{ src: userDetail.profile_image_url }] : []),
-            ...(userDetail.gallery || []).map(url => ({ src: url }))
+            ...(userDetail.profile_image_url ? [{ src: resolveImageUrl(userDetail.profile_image_url) }] : []),
+            ...(userDetail.gallery || []).map(url => ({ src: resolveImageUrl(url) }))
           ]}
         />
       </div>

@@ -1,6 +1,12 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const TOKEN_KEY = 'cinecast_access_token';
 
+export const resolveImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (value) => { if (value) localStorage.setItem(TOKEN_KEY, value); };
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);

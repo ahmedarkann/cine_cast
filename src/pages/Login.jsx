@@ -4,7 +4,7 @@ import { post, setToken } from '@/api/api';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, Loader2, ChevronLeft } from "lucide-react"; // Removed LogIn as it's not used
+import { Mail, Lock, Loader2, ChevronLeft, Eye, EyeOff } from "lucide-react"; // Removed LogIn as it's not used
 import { WebGLShader } from "@/components/ui/web-gl-shader"; // Changed import to WebGLShader
 import { useAuth } from "@/lib/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -19,6 +19,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -136,13 +137,16 @@ export default function Login() {
                     <Input
                       id="password"
                       placeholder="••••••••"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       disabled={loading}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 bg-zinc-900 border-white/10 text-white h-11"
+                      className="pl-10 pr-10 bg-zinc-900 border-white/10 text-white h-11"
                       required
                     />
+                    <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors">
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
                 <Button disabled={loading} className="h-11 font-bold uppercase tracking-wider text-white shadow-lg shadow-red-600/20 hover:opacity-90" style={{ background: gradient }}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { get, put, post } from "@/api/api";
+import { get, put, post, resolveImageUrl } from "@/api/api";
 import { useLang } from "@/hooks/useLang";
 import {
   Search, User, Shield, Mail, Plus, X, Lock, SlidersHorizontal,
@@ -62,7 +62,7 @@ function UserCard({ u, currentUserId, onToggleRole }) {
         <div className="shrink-0 relative">
           {u.profile_image_url ? (
             <img
-              src={u.profile_image_url}
+              src={resolveImageUrl(u.profile_image_url)}
               alt="Profile"
               className="w-12 h-12 rounded-xl object-cover"
             />
