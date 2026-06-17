@@ -37,7 +37,9 @@ async function sendMail({ to, subject, html }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ secret: MAIL_RELAY_SECRET, to, subject, html }),
     });
-    const result = await res.json();
+    const text = await res.text();
+    let result;
+    try { result = JSON.parse(text); } catch { throw new Error(`Mail relay non-JSON response: ${text.slice(0, 200)}`); }
     if (result.status !== 'ok') throw new Error(`Mail relay error: ${JSON.stringify(result)}`);
   } else {
     console.log(`\n📧 [DEV MAIL] To: ${to}\nSubject: ${subject}\n${html}\n`);
@@ -47,6 +49,7 @@ async function sendMail({ to, subject, html }) {
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const app = express();
+app.set('trust proxy', 1);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
