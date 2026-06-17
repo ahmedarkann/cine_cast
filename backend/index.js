@@ -27,25 +27,19 @@ const PORT = process.env.PORT || 5001;
 const APP_URL = process.env.APP_URL || 'http://localhost:5173';
 
 // ── mailer ────────────────────────────────────────────────────────────
-// Configure via env vars. Falls back to console-only logging in dev.
-const smtpConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
-const mailer = smtpConfigured
-  ? nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    })
-  : null;
+const MAIL_RELAY_URL = process.env.MAIL_RELAY_URL || '';
+const MAIL_RELAY_SECRET = process.env.MAIL_RELAY_SECRET || 'cinecast_mail_secret_2024';
 
 async function sendMail({ to, subject, html }) {
-  if (mailer) {
-    await mailer.sendMail({
-      from: process.env.SMTP_FROM || `"CineCAST" <noreply@cinecast.sk>`,
-      to, subject, html,
+  if (MAIL_RELAY_URL) {
+    const res = await fetch(MAIL_RELAY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: MAIL_RELAY_SECRET, to, subject, html }),
     });
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(`Mail relay error: ${JSON.stringify(result)}`);
   } else {
-    // Dev fallback — print to console so you can test without SMTP
     console.log(`\n📧 [DEV MAIL] To: ${to}\nSubject: ${subject}\n${html}\n`);
   }
 }

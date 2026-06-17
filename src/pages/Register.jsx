@@ -68,7 +68,7 @@ export default function Register() {
         setToken(result.access_token);
       }
       await checkUserAuth();
-      navigate("/profile");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Invalid verification code");
     } finally {

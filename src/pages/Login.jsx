@@ -23,7 +23,7 @@ export default function Login() {
   // Redirect if already logged in
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/profile");
+      navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
@@ -37,7 +37,7 @@ export default function Login() {
       
       // Refresh auth state and navigate smoothly
       await checkUserAuth();
-      navigate("/profile");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
