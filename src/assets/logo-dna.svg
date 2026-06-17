@@ -1,0 +1,6 @@
+<svg width="240" height="80" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="40" r="20" fill="none" stroke="#fbb040" stroke-width="4" />
+  <circle cx="40" cy="40" r="10" fill="#fbb040" />
+  <text x="75" y="52" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="white">DNA</text>
+  <text x="135" y="52" font-family="Arial, sans-serif" font-weight="300" font-size="22" fill="white" opacity="0.6">PROD</text>
+</svg>

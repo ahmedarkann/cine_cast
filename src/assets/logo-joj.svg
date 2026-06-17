@@ -1,0 +1,5 @@
+<svg width="240" height="80" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="40" cy="40" r="25" fill="#ef4136" />
+  <text x="40" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="white">JOJ</text>
+  <path d="M75 40 L220 40" stroke="white" stroke-width="2" opacity="0.2" />
+</svg>

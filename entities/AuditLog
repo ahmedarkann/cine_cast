@@ -1,0 +1,26 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "e.g. create, update, delete, accept, reject"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "actor_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "entity_type"
+  ]
+}

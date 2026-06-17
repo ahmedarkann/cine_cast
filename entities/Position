@@ -1,0 +1,73 @@
+{
+  "name": "Position",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "spots_total": {
+      "type": "number",
+      "default": 1
+    },
+    "spots_filled": {
+      "type": "number",
+      "default": 0
+    },
+    "age_min": {
+      "type": "number"
+    },
+    "age_max": {
+      "type": "number"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "any",
+        "male",
+        "female"
+      ],
+      "default": "any"
+    },
+    "required_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shooting_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "compensation": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "project_id",
+    "title"
+  ]
+}

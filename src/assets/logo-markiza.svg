@@ -1,0 +1,6 @@
+<svg width="240" height="80" viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ef4136"/><stop offset="100%" stop-color="#fbb040"/></linearGradient>
+  </defs>
+  <text x="50%" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="36" fill="url(#g1)">MARKÍZA</text>
+</svg>

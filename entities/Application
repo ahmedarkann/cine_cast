@@ -1,0 +1,52 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "position_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Linked user id, empty for guests"
+    },
+    "is_guest": {
+      "type": "boolean",
+      "default": false
+    },
+    "applicant_name": {
+      "type": "string"
+    },
+    "applicant_email": {
+      "type": "string"
+    },
+    "applicant_phone": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "waitlist",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "admin_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "project_id",
+    "position_id",
+    "applicant_name",
+    "applicant_email"
+  ]
+}

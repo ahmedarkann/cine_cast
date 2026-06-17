@@ -1,0 +1,63 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "movie",
+        "tv_series",
+        "commercial",
+        "documentary",
+        "music_video",
+        "other"
+      ],
+      "default": "movie"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "full_description": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Poster image"
+    },
+    "production_company": {
+      "type": "string"
+    },
+    "director": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "shooting_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "shooting_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "full",
+        "closed",
+        "archived"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
