@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { get, put, post, uploadFile } from "@/api/api";
+import { get, put, post, uploadFile, resolveImageUrl } from "@/api/api";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 import { useLang } from "@/hooks/useLang";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -137,6 +139,7 @@ export default function Profile() {
   const [newLang, setNewLang] = useState("");
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingProfileImage, setUploadingProfileImage] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
   const queryClient = useQueryClient();
   const { user, isLoadingAuth } = useAuth();
 
@@ -251,11 +254,6 @@ export default function Profile() {
     }
   };
 
-  const resolveImageUrl = (url) => {
-    if (!url) return null;
-    if (url.startsWith("http")) return url;
-    return `${BACKEND_URL}${url.startsWith("/") ? "" : "/"}${url}`;
-  };
 
   const inp = "w-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-colors";
   const lbl = "text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400 block mb-1.5";
@@ -540,10 +538,11 @@ export default function Profile() {
             {(form.gallery || []).length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {form.gallery.map((url, i) => (
-                  <div key={i} className="relative group aspect-square rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                    <img src={resolveImageUrl(url)} alt="" className="w-full h-full object-cover" />
+                  <div key={i} className="relative group aspect-square rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 cursor-pointer" onClick={() => setLightboxIndex(i)}>
+                    <img src={resolveImageUrl(url)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
                     <button
-                      onClick={() => setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) })}
+                      onClick={(e) => { e.stopPropagation(); setForm({ ...form, gallery: form.gallery.filter((_, j) => j !== i) }); }}
                       className="absolute top-2 right-2 bg-black/60 hover:bg-red-600 rounded-full p-1.5 transition-all md:opacity-0 md:group-hover:opacity-100"
                     >
                       <X className="w-3 h-3 text-white" />
@@ -562,6 +561,13 @@ export default function Profile() {
           </div>
         )}
       </div>
+
+      <Lightbox
+        open={lightboxIndex >= 0}
+        index={lightboxIndex}
+        close={() => setLightboxIndex(-1)}
+        slides={(form.gallery || []).map(url => ({ src: resolveImageUrl(url) }))}
+      />
     </div>
   );
 }
