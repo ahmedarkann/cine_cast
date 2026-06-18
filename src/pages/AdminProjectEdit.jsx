@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { get, post, put, uploadFile } from '@/api/api';
+import { get, post, put, uploadFile, resolveImageUrl } from '@/api/api';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/hooks/useLang";
 import { ArrowLeft, Upload, Plus, Trash2, Save, Loader2, Film, Image, Users, Clapperboard, Info, X } from "lucide-react";
@@ -183,8 +183,15 @@ export default function AdminProjectEdit() {
     }
   };
 
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const validateImageFile = (file) => {
+    if (!ALLOWED_TYPES.includes(file.type)) { alert('Unsupported file type. Please use JPG, PNG, WebP, or GIF.'); return false; }
+    if (file.size > 3 * 1024 * 1024) { alert('File is too large. Maximum size is 3 MB.'); return false; }
+    return true;
+  };
+
   const uploadGalleryImage = async (file) => {
-    if (!file) return;
+    if (!file || !validateImageFile(file)) return;
     setUploadingGallery(true);
     try {
       const { file_url } = await uploadFile({ file });
@@ -197,7 +204,7 @@ export default function AdminProjectEdit() {
   };
 
   const uploadImage = async (file) => {
-    if (!file) return;
+    if (!file || !validateImageFile(file)) return;
     setUploading(true);
     try {
       const { file_url } = await uploadFile({ file });
@@ -366,7 +373,7 @@ export default function AdminProjectEdit() {
               <div className="space-y-4">
                 {form.image_url ? (
                   <div className="relative aspect-video rounded-2xl overflow-hidden group">
-                    <img src={form.image_url} alt="Project" className="w-full h-full object-cover" />
+                    <img src={resolveImageUrl(form.image_url)} alt="Project" className="w-full h-full object-cover" />
                     <button onClick={() => setForm({...form, image_url: ""})} className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold text-[10px] uppercase tracking-[0.2em] text-white">{t("project_form", "change_cover")}</button>
                   </div>
                 ) : (
@@ -379,7 +386,7 @@ export default function AdminProjectEdit() {
                     {uploading ? <Loader2 className="w-8 h-8 animate-spin text-red-500" /> : <Upload className="w-8 h-8 text-zinc-300 dark:text-white/20 group-hover:text-red-500 transition-colors mb-2" />}
                     <span className="text-[10px] font-bold text-zinc-400 dark:text-white/30 uppercase tracking-widest">{t("project_form", "upload_cover")}</span>
                     <span className="text-[10px] text-zinc-400 dark:text-white/20 mt-1">{t("project_form", "upload_cover_hint")}</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => uploadImage(e.target.files[0])} />
+                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={(e) => uploadImage(e.target.files[0])} />
                   </label>
                 )}
                 {errors.cover && <p className={errTxt}>{errors.cover}</p>}
@@ -409,7 +416,7 @@ export default function AdminProjectEdit() {
                       <span className="text-[10px] text-zinc-400 dark:text-white/20 mt-1">{t("project_form", "upload_gallery_hint")}</span>
                     </>
                   )}
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => uploadGalleryImage(e.target.files[0])} disabled={uploadingGallery} />
+                  <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={(e) => uploadGalleryImage(e.target.files[0])} disabled={uploadingGallery} />
                 </label>
                 {errors.gallery && <p className={errTxt}>{errors.gallery}</p>}
 
@@ -417,7 +424,7 @@ export default function AdminProjectEdit() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {form.project_gallery.map((url, i) => (
                       <div key={i} className="relative group aspect-square rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800">
-                        <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={resolveImageUrl(url)} alt={`Gallery image ${i + 1}`} className="w-full h-full object-cover" />
                         <button
                           onClick={() => setForm({ ...form, project_gallery: form.project_gallery.filter((_, j) => j !== i) })}
                           className="absolute top-2 right-2 bg-black/70 hover:bg-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all text-white"

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { get, post, put, del } from "@/api/api";
+import { get, post, put, del, resolveImageUrl } from "@/api/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLang } from "@/hooks/useLang";
 import { Search, Plus, Edit2, Trash2, Eye, Film, Armchair, CheckCircle2, FolderOpen } from "lucide-react";
@@ -166,7 +166,7 @@ export default function AdminProjects() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         {p.image_url ? (
-                          <img src={p.image_url} className="w-10 h-10 rounded-lg object-cover" alt="" />
+                          <img src={resolveImageUrl(p.image_url)} className="w-10 h-10 rounded-lg object-cover" alt="" />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-300 dark:text-white/20"><Film className="w-5 h-5" /></div>
                         )}
