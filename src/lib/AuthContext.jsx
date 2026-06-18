@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { get, getToken, post, setToken, clearToken, uploadFile } from '@/api/api';
+import { get, getToken, post, del, setToken, clearToken, uploadFile } from '@/api/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     clearToken();
     queryClient.removeQueries(['user', 'me']);
     // Clear the httpOnly refresh cookie server-side
-    fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+    post('/api/auth/logout', {}).catch(() => {});
     if (shouldRedirect) navigate('/login');
   }, [navigate, queryClient]);
 
