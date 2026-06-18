@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { get, post, setToken, clearToken, uploadFile } from '@/api/api';
+import { get, post, setToken, clearToken, uploadFile, resolveImageUrl } from '@/api/api';
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/hooks/useLang";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -73,7 +75,7 @@ export default function ProjectDetail() {
       {/* Hero image */}
       <div className="relative h-72 md:h-96 overflow-hidden">
         {project.image_url ? (
-          <img src={project.image_url} alt={project.name} className="w-full h-full object-cover" />
+          <img src={resolveImageUrl(project.image_url)} alt={project.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
             <Film className="w-20 h-20 text-white/10" />
@@ -295,6 +297,26 @@ export default function ProjectDetail() {
               </div>
             )}
           </div>
+          {/* Gallery */}
+          {(project.project_gallery || []).length > 0 && (
+            <div>
+              <h2 className="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-2">
+                <Image className="w-5 h-5 text-red-500" /> Gallery
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {project.project_gallery.map((url, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative"
+                    onClick={() => setLightboxIndex(i)}
+                  >
+                    <img src={resolveImageUrl(url)} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -339,6 +361,13 @@ export default function ProjectDetail() {
           </div>
         </div>
       </div>
+
+      <Lightbox
+        open={lightboxIndex >= 0}
+        index={lightboxIndex}
+        close={() => setLightboxIndex(-1)}
+        slides={(project.project_gallery || []).map(url => ({ src: resolveImageUrl(url) }))}
+      />
 
       {applyModal && (
         <ApplyModal

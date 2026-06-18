@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { get, post, setToken, clearToken, uploadFile } from '@/api/api';
+import { get, post, setToken, clearToken, uploadFile, resolveImageUrl } from '@/api/api';
 import { useQuery } from "@tanstack/react-query";
 import { useLang } from "@/hooks/useLang";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -126,7 +126,7 @@ export default function Projects() {
                     {/* Image */}
                     <div className="relative h-56 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                       {project.image_url ? (
-                        <img src={project.image_url} alt={project.name} className="w-full h-full object-cover" />
+                        <img src={resolveImageUrl(project.image_url)} alt={project.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-300 dark:text-white/10">
                           <Film className="w-14 h-14" />
