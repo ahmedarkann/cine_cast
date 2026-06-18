@@ -4,6 +4,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { useAuth } from '@/lib/AuthContext';
 import { ThemeProvider, useTheme } from "next-themes";
+import { useRef } from "react";
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -99,11 +100,18 @@ const AuthenticatedApp = () => {
 // previously stored in localStorage — otherwise a user who set light mode, then
 // logs out, would see the public site break in light mode.
 function ThemeEnforcer() {
-  const { user } = useAuth();
+  const { user, authChecked } = useAuth();
   const { setTheme } = useTheme();
+  const prevUserRef = useRef(undefined);
   useEffect(() => {
-    if (!user) setTheme("dark");
-  }, [user]);
+    if (!authChecked) return;
+    // Only force dark when transitioning from logged-in → logged-out (actual logout)
+    // Not on initial load when user is null during auth check
+    if (prevUserRef.current && !user) {
+      setTheme("dark");
+    }
+    prevUserRef.current = user;
+  }, [user, authChecked]);
   return null;
 }
 
