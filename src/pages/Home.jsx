@@ -860,8 +860,8 @@ export default function Home() {
           <div>
             <CircularTestimonials
               testimonials={[
-                { name: "Anna Kováčová", designation: t("home", "testimonial_1_role"), quote: t("home", "testimonial_1_quote"), src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80" },
-                { name: "Peter Novák", designation: t("home", "testimonial_2_role"), quote: t("home", "testimonial_2_quote"), src: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80" },
+                { name: "Michal Matura", designation: t("home", "testimonial_1_role"), quote: t("home", "testimonial_1_quote"), src: "/testimonials/michal-matura.jpg" },
+                { name: "Tomáš Demonič", designation: t("home", "testimonial_2_role"), quote: t("home", "testimonial_2_quote"), src: "/testimonials/tomas-demonic.jpg" },
                 { name: "Martin Baláž", designation: t("home", "testimonial_4_role"), quote: t("home", "testimonial_4_quote"), src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80" },
                 { name: "Zuzana Tóthová", designation: t("home", "testimonial_5_role"), quote: t("home", "testimonial_5_quote"), src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=900&q=80" },
                 { name: "Tomáš Varga", designation: t("home", "testimonial_6_role"), quote: t("home", "testimonial_6_quote"), src: "https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&w=900&q=80" },
