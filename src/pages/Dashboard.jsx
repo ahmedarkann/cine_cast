@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { get, put } from '@/api/api';
+import { get, put, resolveImageUrl } from '@/api/api';
 import { useLang } from "@/hooks/useLang";
 import { useAuth } from "@/lib/AuthContext";
 import OnboardingModal, { useOnboarding } from "@/components/OnboardingModal";
@@ -165,7 +165,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-4 mb-8">
           {user?.profile_image_url ? (
             <img
-              src={user.profile_image_url}
+              src={resolveImageUrl(user.profile_image_url)}
               alt={user.full_name}
               className="w-16 h-16 rounded-xl object-cover shrink-0"
             />
@@ -342,7 +342,7 @@ export default function Dashboard() {
                             <div className="flex items-center gap-3">
                               <Link to={`/projects/${app.project_id}`} className="shrink-0">
                                 {project?.image_url ? (
-                                  <img src={project.image_url} alt={project.name} className="w-11 h-11 rounded-lg object-cover hover:opacity-80 transition-opacity" />
+                                  <img src={resolveImageUrl(project.image_url)} alt={project.name} className="w-11 h-11 rounded-lg object-cover hover:opacity-80 transition-opacity" />
                                 ) : (
                                   <div className="w-11 h-11 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <Film className="w-5 h-5 text-zinc-400 dark:text-zinc-600" />
@@ -434,7 +434,7 @@ export default function Dashboard() {
                   className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/[0.06] rounded-xl p-4 flex items-center gap-3"
                 >
                   {item.project?.image_url ? (
-                    <img src={item.project.image_url} alt={item.project.name} className="w-11 h-11 rounded-lg object-cover shrink-0" />
+                    <img src={resolveImageUrl(item.project.image_url)} alt={item.project.name} className="w-11 h-11 rounded-lg object-cover shrink-0" />
                   ) : (
                     <div className="w-11 h-11 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
                       <Sparkles className="w-5 h-5 text-green-500" />
