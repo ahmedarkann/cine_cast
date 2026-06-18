@@ -25,11 +25,12 @@ export function TubelightNavbar({ items, activeKey, onChange, className, layoutI
             onClick={() => onChange(item.key)}
             title={item.label}
             className={cn(
-              "relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-colors",
+              "relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-colors overflow-hidden",
               isActive
-                ? "text-white"
+                ? "text-white shadow-lg shadow-red-600/25"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white",
             )}
+            style={isActive ? { background: gradient } : {}}
           >
             {Icon && <Icon className="w-4 h-4 sm:w-4 sm:h-4 shrink-0" />}
             <span className="hidden sm:inline">{item.label}</span>
