@@ -206,13 +206,30 @@ export default function Profile() {
     }
   };
 
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const MAX_SIZE = 3 * 1024 * 1024;
+
+  const validateFile = (file) => {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      alert('Unsupported file type. Please use JPG, PNG, WebP, or GIF. HEIC files are not supported — convert them first using the Photos app (File → Export → Export as JPEG).');
+      return false;
+    }
+    if (file.size > MAX_SIZE) {
+      alert('File is too large. Maximum size is 3 MB.');
+      return false;
+    }
+    return true;
+  };
+
   const uploadPhoto = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !validateFile(file)) return;
     setUploadingPhoto(true);
     try {
       const { file_url } = await uploadFile({ file });
       setForm(prev => ({ ...prev, gallery: [...(prev.gallery || []), file_url] }));
+    } catch (err) {
+      alert(err.message || 'Upload failed');
     } finally {
       setUploadingPhoto(false);
     }
@@ -220,15 +237,15 @@ export default function Profile() {
 
   const uploadProfileImage = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !validateFile(file)) return;
     setUploadingProfileImage(true);
     try {
       const { file_url } = await uploadFile({ file });
       setForm(prev => ({ ...prev, profile_image_url: file_url }));
       await put('/api/auth/me', { profile_image_url: file_url });
       queryClient.invalidateQueries(['user', 'me']);
-    } catch {
-      alert("Upload failed");
+    } catch (err) {
+      alert(err.message || 'Upload failed');
     } finally {
       setUploadingProfileImage(false);
     }
@@ -304,7 +321,7 @@ export default function Profile() {
                 ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                 : <Camera className="w-5 h-5 text-white" />}
             </div>
-            <input type="file" accept="image/*" className="hidden" onChange={uploadProfileImage} disabled={uploadingProfileImage} />
+            <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={uploadProfileImage} disabled={uploadingProfileImage} />
           </label>
 
           <div className="flex-1 min-w-0">
@@ -517,7 +534,7 @@ export default function Profile() {
                   </span>
                 </>
               )}
-              <input type="file" accept="image/*" className="hidden" onChange={uploadPhoto} disabled={uploadingPhoto} />
+              <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={uploadPhoto} disabled={uploadingPhoto} />
             </label>
 
             {(form.gallery || []).length > 0 ? (

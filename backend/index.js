@@ -51,6 +51,10 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 const app = express();
 app.set('trust proxy', 1);
 
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3 MB
+const MAX_USER_STORAGE = 100 * 1024 * 1024; // 100 MB
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
@@ -59,7 +63,16 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: MAX_FILE_SIZE },
+  fileFilter: (req, file, cb) => {
+    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      return cb(new Error('INVALID_TYPE'));
+    }
+    cb(null, true);
+  },
+});
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
@@ -1252,17 +1265,52 @@ app.post('/api/contact', contactLimiter, async (req, res) => {
   }
 });
 
-app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
-  try {
+app.post('/api/upload', authMiddleware, (req, res, next) => {
+  upload.single('file')(req, res, async (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'File too large. Maximum size is 3 MB.' });
+      }
+      if (err.message === 'INVALID_TYPE') {
+        return res.status(400).json({ message: 'Invalid file type. HEIC and other non-standard formats are not supported. Please use JPG, PNG, WebP, or GIF.' });
+      }
+      return res.status(400).json({ message: err.message || 'Upload failed' });
+    }
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
+
+    // Quota check — skip for admins
+    if (req.user.role !== 'admin') {
+      try {
+        const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+        const urls = [
+          user.profile_image_url,
+          ...(user.gallery ? user.gallery.split(',').map(s => s.trim()) : []),
+        ].filter(Boolean);
+
+        let totalBytes = 0;
+        for (const url of urls) {
+          const filename = url.split('/uploads/').pop();
+          const filePath = path.join(uploadsDir, filename);
+          try {
+            const stat = fs.statSync(filePath);
+            totalBytes += stat.size;
+          } catch { /* file missing on disk, skip */ }
+        }
+
+        if (totalBytes + req.file.size > MAX_USER_STORAGE) {
+          fs.unlinkSync(req.file.path);
+          return res.status(400).json({ message: 'Storage limit reached. You have used your 100 MB quota. Please delete some photos first.' });
+        }
+      } catch (quotaErr) {
+        console.error('Quota check error:', quotaErr);
+      }
+    }
+
     const fileUrl = `/uploads/${req.file.filename}`;
     res.json({ file_url: fileUrl });
-  } catch (error) {
-    console.error("Upload File Error:", error);
-    res.status(500).json({ message: "Internal server error during file upload" });
-  }
+  });
 });
 
 async function startServer() {

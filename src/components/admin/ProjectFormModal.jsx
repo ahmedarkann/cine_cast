@@ -95,10 +95,18 @@ export default function ProjectFormModal({ project, onClose, onSaved }) {
   const uploadImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setUploading(true); // Using the 'uploadFile' function from api.js
-    const { file_url } = await uploadFile({ file });
-    setForm({ ...form, image_url: file_url });
-    setUploading(false);
+    if (file.size > 3 * 1024 * 1024) { alert('File is too large. Maximum size is 3 MB.'); return; }
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowed.includes(file.type)) { alert('Unsupported file type. Please use JPG, PNG, WebP, or GIF.'); return; }
+    setUploading(true);
+    try {
+      const { file_url } = await uploadFile({ file });
+      setForm({ ...form, image_url: file_url });
+    } catch (err) {
+      alert(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const inp = "w-full bg-zinc-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50";
@@ -135,7 +143,7 @@ export default function ProjectFormModal({ project, onClose, onSaved }) {
                 <input className={inp + " flex-1"} value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
                 <label className="bg-zinc-700 hover:bg-zinc-600 border border-white/10 rounded-lg px-3 py-2 cursor-pointer flex items-center">
                   {uploading ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Upload className="w-4 h-4 text-white/60" />}
-                  <input type="file" accept="image/*" className="hidden" onChange={uploadImage} />
+                  <input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" className="hidden" onChange={uploadImage} />
                 </label>
               </div>
             </div>
